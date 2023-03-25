@@ -314,7 +314,7 @@ function main(peer) {
     };
     document.body.appendChild(bar);
 
-    audioMap[bar.id] = new Audio(`./sounds/${bar.id}.aif`);
+    audioMap[bar.id] = new Audio(`./sounds/${bar.id.replace("#", "s")}.wav`);
   }
 
   // Add keyboard controls
