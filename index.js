@@ -1,7 +1,6 @@
 const emojis = [
   "🤣",
   "😭",
-  "🙏",
   "😘",
   "🥰",
   "😍",
@@ -16,7 +15,6 @@ const emojis = [
   "🤷",
   "🙄",
   "😌",
-  "💓",
   "🤩",
   "🙃",
   "😬",
@@ -40,6 +38,10 @@ const emojis = [
   "🎁",
   "💥",
 ];
+
+const audioMap = {
+  C5: new Audio("sounds/A.wav"),
+};
 
 function init() {
   // Make body take up full screen
@@ -73,6 +75,38 @@ function init() {
   });
 }
 
+function playNote(emojiId, noteId) {
+  // Play note
+  const audio = audioMap[noteId];
+  if (audio) {
+    const newAudio = new Audio(audio.src);
+    newAudio.play();
+  }
+
+  // Play emoji animation on key
+  const emoji = emojis[emojiId];
+  const emojiDiv = document.createElement("div");
+  const barDiv = document.getElementById(noteId);
+  emojiDiv.style.position = "absolute";
+  emojiDiv.style.top = barDiv.offsetTop + barDiv.offsetHeight / 3 + "px";
+  emojiDiv.style.left = barDiv.offsetLeft + "px";
+  emojiDiv.style.width = barDiv.offsetWidth + "px";
+  emojiDiv.style.textAlign = "center";
+  emojiDiv.style.fontSize = "1.5rem";
+  // fade out font
+  emojiDiv.style.transition = "all 0.5s";
+  emojiDiv.innerHTML = emoji;
+  document.body.appendChild(emojiDiv);
+
+  setTimeout(() => {
+    emojiDiv.style.opacity = "0";
+    emojiDiv.style.transform = "translateY(-100px)";
+    setTimeout(() => {
+      document.body.removeChild(emojiDiv);
+    }, 500);
+  }, 100);
+}
+
 function main(peer) {
   // Determine whether we're the host or the client (if no `s` in URL, we're the host)
   const isHost = window.location.href.indexOf("?s") === -1;
@@ -81,8 +115,8 @@ function main(peer) {
   const hostId = isHost ? peer.id : window.location.href.split("?s=")[1];
 
   // Split behavior based on whether we're the host or the client
+  const connections = new Set();
   if (isHost) {
-    const connections = new Set();
     peer.on("connection", (conn) => {
       connections.add(conn);
 
@@ -93,6 +127,12 @@ function main(peer) {
             otherConn.send(data);
           }
         }
+
+        // Parse data
+        const [icon, noteId] = data.split(" ");
+
+        // Play note
+        playNote(icon, noteId);
       });
 
       conn.on("close", () => {
@@ -102,7 +142,19 @@ function main(peer) {
   } else {
     const conn = peer.connect(hostId);
     conn.on("open", () => {
-      conn.on("data", (data) => {});
+      connections.add(conn);
+
+      conn.on("data", (data) => {
+        // Parse data
+        const [icon, noteId] = data.split(" ");
+
+        // Play note
+        playNote(icon, noteId);
+      });
+
+      conn.on("close", () => {
+        connections.delete(conn);
+      });
     });
   }
 
@@ -130,12 +182,14 @@ function main(peer) {
   userIcon.style.fontSize = "1.5rem";
   userIcon.title = "Click to change emoji";
   userIcon.style.cursor = "pointer";
-  function randomEmoji() {
-    return emojis[Math.floor(Math.random() * emojis.length)];
+  function randomEmojiId() {
+    return Math.floor(Math.random() * emojis.length);
   }
-  userIcon.innerHTML = randomEmoji();
+  let emojiId = randomEmojiId();
+  userIcon.innerHTML = emojis[emojiId];
   userIcon.onclick = () => {
-    userIcon.innerHTML = randomEmoji();
+    emojiId = randomEmojiId();
+    userIcon.innerHTML = emojis[emojiId];
   };
   topBar.appendChild(userIcon);
 
@@ -175,8 +229,8 @@ function main(peer) {
   topBar.appendChild(inviteButton);
 
   // Add marimba bars
-  const marimbaBarInfo = [
-    { note: "C", octave: 5 },
+  const marimbaNoteInfo = [
+    { note: "C", octave: 5, sound: new Audio("sounds/A.wav") },
     { note: "C#", octave: 5 },
     { note: "D", octave: 5 },
     { note: "D#", octave: 5 },
@@ -209,24 +263,31 @@ function main(peer) {
     { note: "F#", octave: 7 },
     { note: "G", octave: 7 },
   ];
-  const marimbaBars = [];
-  for (const [i, barInfo] of marimbaBarInfo.entries()) {
+  const numNaturalNotes = 19;
+
+  let barOffset = 0;
+  for (const barInfo of marimbaNoteInfo) {
+    const isNaturalNote = barInfo.note[1] !== "#";
+
     const bar = document.createElement("div");
+    bar.id = `${barInfo.note}${barInfo.octave}`;
     bar.style.position = "absolute";
-    bar.style.top = "4rem";
-    bar.style.left = `${i * 3.5}rem`;
-    bar.style.width = "3rem";
-    bar.style.height = "calc(100vh - 4rem)";
+    if (isNaturalNote) {
+      bar.style.top = "calc(50vh + 2.5rem)";
+    } else {
+      bar.style.top = "4.5rem";
+    }
+    bar.style.left = `${
+      ((barOffset + 0.1 - (isNaturalNote ? 0 : 0.5)) / numNaturalNotes) * 100
+    }%`;
+    barOffset += isNaturalNote ? 1 : 0;
+    bar.style.width = `${(0.8 / numNaturalNotes) * 100}%`;
+    bar.style.height = "calc(50vh - 2.5rem)";
     bar.style.background = "#444444";
-    bar.style.border = "0.1rem solid #555555";
     bar.style.borderRadius = "0.5rem";
     bar.style.boxShadow = "0 0 0.5rem #000000";
     bar.style.cursor = "pointer";
     bar.style.userSelect = "none";
-    bar.style.webkitUserSelect = "none";
-    bar.style.mozUserSelect = "none";
-    bar.style.msUserSelect = "none";
-    bar.style.oUserSelect = "none";
     bar.style.transition = "background 0.1s";
     bar.onmouseenter = () => {
       bar.style.background = "#555555";
@@ -234,8 +295,14 @@ function main(peer) {
     bar.onmouseleave = () => {
       bar.style.background = "#444444";
     };
-    bar.onclick = () => {};
-    marimbaBars.push(bar);
+    bar.onclick = () => {
+      playNote(emojiId, bar.id);
+
+      // Send note to all connections
+      for (const connection of connections) {
+        connection.send(emojiId + " " + bar.id);
+      }
+    };
     document.body.appendChild(bar);
   }
 }
