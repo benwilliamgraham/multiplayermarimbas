@@ -1,3 +1,46 @@
+const emojis = [
+  "🤣",
+  "😭",
+  "🙏",
+  "😘",
+  "🥰",
+  "😍",
+  "😊",
+  "🎉",
+  "😁",
+  "💕",
+  "🥺",
+  "😅",
+  "🔥",
+  "🤦",
+  "🤷",
+  "🙄",
+  "😌",
+  "💓",
+  "🤩",
+  "🙃",
+  "😬",
+  "😱",
+  "😴",
+  "🤭",
+  "😐",
+  "🌞",
+  "😇",
+  "🌸",
+  "😈",
+  "🎶",
+  "🎊",
+  "🥵",
+  "😞",
+  "💚",
+  "🖤",
+  "💰",
+  "😚",
+  "👑",
+  "🎁",
+  "💥",
+];
+
 function init() {
   // Make body take up full screen
   document.body.style.margin = "0";
@@ -39,15 +82,27 @@ function main(peer) {
 
   // Split behavior based on whether we're the host or the client
   if (isHost) {
+    const connections = new Set();
     peer.on("connection", (conn) => {
+      connections.add(conn);
+
       conn.on("data", (data) => {
-        console.log(data);
+        // Send data to all other connections
+        for (const otherConn of connections) {
+          if (otherConn !== conn) {
+            otherConn.send(data);
+          }
+        }
+      });
+
+      conn.on("close", () => {
+        connections.delete(conn);
       });
     });
   } else {
     const conn = peer.connect(hostId);
     conn.on("open", () => {
-      conn.send("Hello!");
+      conn.on("data", (data) => {});
     });
   }
 
@@ -61,6 +116,28 @@ function main(peer) {
   topBar.style.color = "#FFFFFF";
   topBar.style.textAlign = "center";
   document.body.appendChild(topBar);
+
+  // Add user icon
+  const userIcon = document.createElement("button");
+  userIcon.style.position = "absolute";
+  userIcon.style.top = "0.5rem";
+  userIcon.style.left = "0.5rem";
+  userIcon.style.height = "3rem";
+  userIcon.style.width = "3rem";
+  userIcon.style.background = "#555555";
+  userIcon.style.border = "none";
+  userIcon.style.borderRadius = "50%";
+  userIcon.style.fontSize = "1.5rem";
+  userIcon.title = "Click to change emoji";
+  userIcon.style.cursor = "pointer";
+  function randomEmoji() {
+    return emojis[Math.floor(Math.random() * emojis.length)];
+  }
+  userIcon.innerHTML = randomEmoji();
+  userIcon.onclick = () => {
+    userIcon.innerHTML = randomEmoji();
+  };
+  topBar.appendChild(userIcon);
 
   // Add invite button
   const inviteButton = document.createElement("button");
@@ -96,6 +173,71 @@ function main(peer) {
     };
   };
   topBar.appendChild(inviteButton);
+
+  // Add marimba bars
+  const marimbaBarInfo = [
+    { note: "C", octave: 5 },
+    { note: "C#", octave: 5 },
+    { note: "D", octave: 5 },
+    { note: "D#", octave: 5 },
+    { note: "E", octave: 5 },
+    { note: "F", octave: 5 },
+    { note: "F#", octave: 5 },
+    { note: "G", octave: 5 },
+    { note: "G#", octave: 5 },
+    { note: "A", octave: 5 },
+    { note: "A#", octave: 5 },
+    { note: "B", octave: 5 },
+    { note: "C", octave: 6 },
+    { note: "C#", octave: 6 },
+    { note: "D", octave: 6 },
+    { note: "D#", octave: 6 },
+    { note: "E", octave: 6 },
+    { note: "F", octave: 6 },
+    { note: "F#", octave: 6 },
+    { note: "G", octave: 6 },
+    { note: "G#", octave: 6 },
+    { note: "A", octave: 6 },
+    { note: "A#", octave: 6 },
+    { note: "B", octave: 6 },
+    { note: "C", octave: 7 },
+    { note: "C#", octave: 7 },
+    { note: "D", octave: 7 },
+    { note: "D#", octave: 7 },
+    { note: "E", octave: 7 },
+    { note: "F", octave: 7 },
+    { note: "F#", octave: 7 },
+    { note: "G", octave: 7 },
+  ];
+  const marimbaBars = [];
+  for (const [i, barInfo] of marimbaBarInfo.entries()) {
+    const bar = document.createElement("div");
+    bar.style.position = "absolute";
+    bar.style.top = "4rem";
+    bar.style.left = `${i * 3.5}rem`;
+    bar.style.width = "3rem";
+    bar.style.height = "calc(100vh - 4rem)";
+    bar.style.background = "#444444";
+    bar.style.border = "0.1rem solid #555555";
+    bar.style.borderRadius = "0.5rem";
+    bar.style.boxShadow = "0 0 0.5rem #000000";
+    bar.style.cursor = "pointer";
+    bar.style.userSelect = "none";
+    bar.style.webkitUserSelect = "none";
+    bar.style.mozUserSelect = "none";
+    bar.style.msUserSelect = "none";
+    bar.style.oUserSelect = "none";
+    bar.style.transition = "background 0.1s";
+    bar.onmouseenter = () => {
+      bar.style.background = "#555555";
+    };
+    bar.onmouseleave = () => {
+      bar.style.background = "#444444";
+    };
+    bar.onclick = () => {};
+    marimbaBars.push(bar);
+    document.body.appendChild(bar);
+  }
 }
 
 init();
