@@ -39,9 +39,7 @@ const emojis = [
   "💥",
 ];
 
-const audioMap = {
-  C5: new Audio("sounds/A.wav"),
-};
+const audioMap = {};
 
 function init() {
   // Make body take up full screen
@@ -78,10 +76,8 @@ function init() {
 function playNote(emojiId, noteId) {
   // Play note
   const audio = audioMap[noteId];
-  if (audio) {
-    const newAudio = new Audio(audio.src);
-    newAudio.play();
-  }
+  const newAudio = new Audio(audio.src);
+  newAudio.play();
 
   // Play emoji animation on key
   const emoji = emojis[emojiId];
@@ -232,7 +228,19 @@ function main(peer) {
 
   // Add marimba bars
   const marimbaNoteInfo = [
-    { note: "C", octave: 5, sound: new Audio("sounds/A.wav") },
+    { note: "C", octave: 4 },
+    { note: "C#", octave: 4 },
+    { note: "D", octave: 4 },
+    { note: "D#", octave: 4 },
+    { note: "E", octave: 4 },
+    { note: "F", octave: 4 },
+    { note: "F#", octave: 4 },
+    { note: "G", octave: 4 },
+    { note: "G#", octave: 4 },
+    { note: "A", octave: 4 },
+    { note: "A#", octave: 4 },
+    { note: "B", octave: 4 },
+    { note: "C", octave: 5 },
     { note: "C#", octave: 5 },
     { note: "D", octave: 5 },
     { note: "D#", octave: 5 },
@@ -252,18 +260,6 @@ function main(peer) {
     { note: "F", octave: 6 },
     { note: "F#", octave: 6 },
     { note: "G", octave: 6 },
-    { note: "G#", octave: 6 },
-    { note: "A", octave: 6 },
-    { note: "A#", octave: 6 },
-    { note: "B", octave: 6 },
-    { note: "C", octave: 7 },
-    { note: "C#", octave: 7 },
-    { note: "D", octave: 7 },
-    { note: "D#", octave: 7 },
-    { note: "E", octave: 7 },
-    { note: "F", octave: 7 },
-    { note: "F#", octave: 7 },
-    { note: "G", octave: 7 },
   ];
   const numNaturalNotes = marimbaNoteInfo.filter(
     (barInfo) => barInfo.note[1] !== "#"
@@ -317,6 +313,8 @@ function main(peer) {
       }
     };
     document.body.appendChild(bar);
+
+    audioMap[bar.id] = new Audio(`./sounds/${bar.id}.aif`);
   }
 
   // Add keyboard controls
