@@ -93,6 +93,8 @@ function playNote(emojiId, noteId) {
   emojiDiv.style.width = barDiv.offsetWidth + "px";
   emojiDiv.style.textAlign = "center";
   emojiDiv.style.fontSize = "1.5rem";
+  emojiDiv.style.userSelect = "none";
+  emojiDiv.style.pointerEvents = "none";
   // fade out font
   emojiDiv.style.transition = "all 0.5s";
   emojiDiv.innerHTML = emoji;
@@ -179,6 +181,7 @@ function main(peer) {
   userIcon.style.border = "none";
   userIcon.style.borderRadius = "50%";
   userIcon.style.fontSize = "1.5rem";
+  userIcon.style.userSelect = "none";
   userIcon.title = "Click to change emoji";
   userIcon.style.cursor = "pointer";
   function randomEmojiId() {
