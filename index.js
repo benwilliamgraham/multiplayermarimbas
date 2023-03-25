@@ -165,7 +165,6 @@ function main(peer) {
   topBar.style.width = "100%";
   topBar.style.height = "4rem";
   topBar.style.background = "#444444";
-  topBar.style.color = "#FFFFFF";
   topBar.style.textAlign = "center";
   document.body.appendChild(topBar);
 
@@ -290,17 +289,19 @@ function main(peer) {
     }%`;
     barOffset += isNaturalNote ? 1 : 0;
     bar.style.width = `${(0.8 / numNaturalNotes) * 100}%`;
-    bar.style.background = "#444444";
+    const barDefaultColor = "#867070";
+    const barHoverColor = "#615656";
+    bar.style.background = barDefaultColor;
     bar.style.borderRadius = "0.5rem";
     bar.style.boxShadow = "0 0 0.5rem #000000";
     bar.style.cursor = "pointer";
     bar.style.userSelect = "none";
     bar.style.transition = "background 0.1s";
     bar.onmouseenter = () => {
-      bar.style.background = "#555555";
+      bar.style.background = barHoverColor;
     };
     bar.onmouseleave = () => {
-      bar.style.background = "#444444";
+      bar.style.background = barDefaultColor;
     };
     bar.onclick = () => {
       playNote(emojiId, bar.id);
