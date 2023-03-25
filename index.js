@@ -88,7 +88,7 @@ function playNote(emojiId, noteId) {
   const emojiDiv = document.createElement("div");
   const barDiv = document.getElementById(noteId);
   emojiDiv.style.position = "absolute";
-  emojiDiv.style.top = barDiv.offsetTop + barDiv.offsetHeight / 3 + "px";
+  emojiDiv.style.top = barDiv.offsetTop + barDiv.offsetHeight / 2 + "px";
   emojiDiv.style.left = barDiv.offsetLeft + "px";
   emojiDiv.style.width = barDiv.offsetWidth + "px";
   emojiDiv.style.textAlign = "center";
@@ -273,16 +273,23 @@ function main(peer) {
     bar.id = `${barInfo.note}${barInfo.octave}`;
     bar.style.position = "absolute";
     if (isNaturalNote) {
-      bar.style.top = "calc(50vh + 2.5rem)";
+      bar.style.top = "calc(50vh)";
+      bar.style.height = `calc(${
+        30 + 20 * (1 - barOffset / numNaturalNotes)
+      }vh - 0.5rem)`;
+      bar.style.zIndex = "-1";
     } else {
-      bar.style.top = "4.5rem";
+      bar.style.top = `calc(${(20 * barOffset) / numNaturalNotes}vh + 4rem)`;
+      bar.style.height = `calc(${
+        30 + 20 * (1 - barOffset / numNaturalNotes)
+      }vh)`;
+      bar.style.zIndex = "0";
     }
     bar.style.left = `${
       ((barOffset + 0.1 - (isNaturalNote ? 0 : 0.5)) / numNaturalNotes) * 100
     }%`;
     barOffset += isNaturalNote ? 1 : 0;
     bar.style.width = `${(0.8 / numNaturalNotes) * 100}%`;
-    bar.style.height = "calc(50vh - 2.5rem)";
     bar.style.background = "#444444";
     bar.style.borderRadius = "0.5rem";
     bar.style.boxShadow = "0 0 0.5rem #000000";
