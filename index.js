@@ -265,7 +265,9 @@ function main(peer) {
     { note: "F#", octave: 7 },
     { note: "G", octave: 7 },
   ];
-  const numNaturalNotes = 19;
+  const numNaturalNotes = marimbaNoteInfo.filter(
+    (barInfo) => barInfo.note[1] !== "#"
+  ).length;
 
   let barOffset = 0;
   for (const barInfo of marimbaNoteInfo) {
@@ -292,8 +294,8 @@ function main(peer) {
     }%`;
     barOffset += isNaturalNote ? 1 : 0;
     bar.style.width = `${(0.8 / numNaturalNotes) * 100}%`;
-    const barDefaultColor = "#867070";
-    const barHoverColor = "#615656";
+    const barDefaultColor = "#99503a";
+    const barHoverColor = "#8a4537";
     bar.style.background = barDefaultColor;
     bar.style.borderRadius = "0.5rem";
     bar.style.boxShadow = "0 0 0.5rem #000000";
@@ -316,6 +318,9 @@ function main(peer) {
     };
     document.body.appendChild(bar);
   }
+
+  // Add keyboard controls
+  document.onkeydown = (event) => {};
 }
 
 init();
