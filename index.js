@@ -319,6 +319,45 @@ function main(peer) {
 
   // Add keyboard controls
   document.onkeydown = (event) => {};
+
+  // Add hidden CBAT function
+  function playCBAT() {
+    const notesAndDurations = [
+      { note: "B5", duration: 0.5 },
+      { note: "C#6", duration: 0.3 },
+      { note: "A#5", duration: 0.5 },
+      { note: "B5", duration: 0.4 },
+      { note: "A5", duration: 0.2 },
+      { note: "A5", duration: 0.2 },
+      { note: "A5", duration: 0.3 },
+      { note: "G5", duration: 0.7 },
+      // Break
+      { note: "G#5", duration: 0.5 },
+      { note: "A#5", duration: 0.3 },
+      { note: "G5", duration: 0.5 },
+      { note: "G#5", duration: 0.4 },
+      { note: "F#5", duration: 0.2 },
+      { note: "F#5", duration: 0.2 },
+      { note: "F#5", duration: 0.3 },
+      { note: "F5", duration: 0.05 },
+      { note: "E5", duration: 0.05 },
+      { note: "D#5", duration: 0.05 },
+      { note: "D5", duration: 0.05 },
+      { note: "C#5", duration: 0.05 },
+      { note: "C5", duration: 0.05 },
+      { note: "B4", duration: 0.7 },
+    ];
+    notesAndDurations.push(...notesAndDurations);
+
+    let time = 0;
+    for (const noteAndDuration of notesAndDurations) {
+      setTimeout(() => {
+        playNote(emojiId, noteAndDuration.note);
+      }, time * 1000);
+      time += noteAndDuration.duration;
+    }
+  }
+  window.playCBAT = playCBAT;
 }
 
 init();
