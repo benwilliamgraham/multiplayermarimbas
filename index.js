@@ -156,6 +156,15 @@ function main(peer) {
     });
   }
 
+  function playAndSendNote(emojiId, id) {
+    playNote(emojiId, id);
+
+    // Send note to all connections
+    for (const connection of connections) {
+      connection.send(emojiId + " " + id);
+    }
+  }
+
   // Create title bar
   const topBar = document.createElement("div");
   topBar.style.top = "0";
@@ -305,12 +314,7 @@ function main(peer) {
       bar.style.background = barDefaultColor;
     };
     bar.onclick = () => {
-      playNote(emojiId, bar.id);
-
-      // Send note to all connections
-      for (const connection of connections) {
-        connection.send(emojiId + " " + bar.id);
-      }
+      playAndSendNote(emojiId, bar.id);
     };
     document.body.appendChild(bar);
 
@@ -352,7 +356,7 @@ function main(peer) {
     let time = 0;
     for (const noteAndDuration of notesAndDurations) {
       setTimeout(() => {
-        playNote(emojiId, noteAndDuration.note);
+        playAndSendNote(emojiId, noteAndDuration.note);
       }, time * 1000);
       time += noteAndDuration.duration;
     }
