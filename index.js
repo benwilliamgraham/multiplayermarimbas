@@ -235,6 +235,15 @@ function main(peer) {
   };
   topBar.appendChild(inviteButton);
 
+  // Record mouse down
+  let isMouseDown = false;
+  document.body.onmousedown = () => {
+    isMouseDown = true;
+  };
+  document.body.onmouseup = () => {
+    isMouseDown = false;
+  };
+
   // Add marimba bars
   const marimbaNoteInfo = [
     { note: "C", octave: 4 },
@@ -309,11 +318,14 @@ function main(peer) {
     bar.style.transition = "background 0.1s";
     bar.onmouseenter = () => {
       bar.style.background = barHoverColor;
+      if (isMouseDown) {
+        playAndSendNote(emojiId, bar.id);
+      }
     };
     bar.onmouseleave = () => {
       bar.style.background = barDefaultColor;
     };
-    bar.onclick = () => {
+    bar.onmousedown = () => {
       playAndSendNote(emojiId, bar.id);
     };
     document.body.appendChild(bar);
